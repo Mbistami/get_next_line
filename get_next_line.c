@@ -6,7 +6,7 @@
 /*   By: mbistami <mbistami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 10:37:00 by mbistami          #+#    #+#             */
-/*   Updated: 2021/11/26 23:16:59 by mbistami         ###   ########.fr       */
+/*   Updated: 2021/11/27 02:11:18 by mbistami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,23 @@ char	*get_next_line(int fd)
 	static char	*to_return;
 	int			read_res;
 
+	if (fd <= 0 || fd >= 4)
+		return (NULL);
 	b_size = BUFFER_SIZE + 1;
-	buffer = malloc(b_size);
+	buffer = malloc(b_size + 1);
 	buffer[b_size + 1] = '\0';
 	read_res = 1;
 	while (read_res && ft_strchr(buffer, 10) == NULL)
 	{
 		read_res = read(fd, buffer, b_size);
+		if (read_res == -1)
+		{
+			free(buffer);
+			return (NULL);
+		}
+		printf("%d", read_res);
+		if (!read_res)
+			return (NULL);
 		buffer[read_res] = '\0';
 		if (to_return <= 0)
 		{
