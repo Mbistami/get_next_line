@@ -6,7 +6,7 @@
 /*   By: mbistami <mbistami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 10:31:14 by mbistami          #+#    #+#             */
-/*   Updated: 2021/11/26 23:12:37 by mbistami         ###   ########.fr       */
+/*   Updated: 2021/11/28 04:16:33 by mbistami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,25 @@ size_t	ft_strlcat(char *dst, char *src, size_t dstsize)
 
 size_t	ft_strlcpy(char *dst, const char *src, size_t length)
 {
-	size_t	len_src;
+	size_t		len_src;
+	char		*d;
+	const char	*s;
+	size_t		len;
 
+	d = dst;
+	s = src;
 	len_src = ft_strlen(src);
 	if (len_src + 1 < length)
-		ft_memcpy(dst, src, len_src + 1);
+	{
+		len = len_src + 1;
+		while (len--)
+			*d++ = *s++;
+	}
 	else if (length != 0)
 	{
-		ft_memcpy(dst, src, length - 1);
+		len = length;
+		while (len--)
+			*d++ = *s++;
 		dst[length - 1] = '\0';
 	}
 	return (len_src);
@@ -74,20 +85,6 @@ char	*ft_substr(const char *src, unsigned int start, size_t len)
 	return (r);
 }
 
-void	*ft_memcpy(void *dest, const char *src, size_t len)
-{
-	char		*d;
-	const char	*s;
-
-	d = dest;
-	s = src;
-	if (dest == NULL && src == NULL)
-		return (NULL);
-	while (len--)
-		*d++ = *s++;
-	return (dest);
-}
-
 char	*ft_strdup(const char *src)
 {
 	char	*s;
@@ -101,4 +98,22 @@ char	*ft_strdup(const char *src)
 		return (NULL);
 	ft_strlcpy(s, source, len + 1);
 	return (s);
+}
+
+char	*ft_strjoin(const char *s1, const char *s2)
+{
+	char	*result;
+	size_t	max_len;
+
+	if (!s1)
+		return (NULL);
+	max_len = ft_strlen(s1) + ft_strlen(s2);
+		result = (char *) malloc((max_len + 1) * sizeof(char));
+	if (result == NULL)
+		return (NULL);
+	if (sizeof(result) <= 0)
+		return (ft_strdup(""));
+	ft_strlcpy(result, s1, max_len + 1);
+	ft_strlcat(result, (char *)s2, (max_len + 1));
+	return (result);
 }

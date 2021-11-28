@@ -6,7 +6,7 @@
 /*   By: mbistami <mbistami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 10:37:00 by mbistami          #+#    #+#             */
-/*   Updated: 2021/11/27 02:11:18 by mbistami         ###   ########.fr       */
+/*   Updated: 2021/11/28 11:46:53 by mbistami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,43 +30,9 @@ char	*ft_strchr(const char	*string, int searchChar)
 	return (NULL);
 }
 
-char	*ft_gnl_process(char **string)
-{
-	char	*to_return;
-	size_t	len;
-	size_t	i;
-	char	*main_string;
-
-	main_string = *string;
-	i = 0;
-	len = 0;
-	while (main_string[i] && main_string[i] != '\n')
-		i++;
-	to_return = ft_substr(*string, 0, i + 1);
-	to_return[i + 1] = '\0';
-	*string = ft_substr(*string, i + 1, ft_strlen(*string));
-	return (to_return);
-}
-
-char	*ft_strjoin(const char *s1, const char *s2)
-{
-	char	*result;
-	size_t	max_len;
-
-	if (!s1)
-		return (NULL);
-	max_len = ft_strlen(s1) + ft_strlen(s2);
-		result = (char *) malloc((max_len + 1) * sizeof(char));
-	if (result == NULL)
-		return (NULL);
-	ft_strlcpy(result, s1, max_len + 1);
-	ft_strlcat(result, (char *)s2, (max_len + 1));
-	return (result);
-}
-
 size_t	ft_strlen(const char *v)
 {
-	int	counter;
+	size_t	counter;
 
 	counter = 0;
 	while (*(v + counter))
@@ -74,42 +40,78 @@ size_t	ft_strlen(const char *v)
 	return (counter);
 }
 
+char	*ft_gnl_extract_line(char **main_string, char **static_stirng, size_t i)
+{
+	char	*to_return;
+
+	if (i == ft_strlen(*main_string))
+	{
+		*static_stirng = NULL;
+		to_return = ft_strdup(*main_string);
+		free(*main_string);
+		*main_string = NULL;
+		return (to_return);
+	}
+	else if (i + 1 <= ft_strlen(*main_string))
+	{
+		*static_stirng = ft_strdup(*main_string + i + 1);
+		to_return = ft_substr(*main_string, 0, i + 1);
+	}
+	else
+		return (NULL);
+	free(*main_string);
+	return (to_return);
+}
+
+char	*ft_gnl_process(char **string, int read_res)
+{
+	size_t	i;
+	char	*main_string;
+
+	main_string = ft_strdup(*string);
+	i = 0;
+	while (main_string[i] && main_string[i] != '\n')
+		i++;
+	if (ft_strlen(*string) <= 0 && read_res <= 0)
+	{
+		free(*string);
+		free(main_string);
+		*string = NULL;
+		if (read_res == 0)
+			return (NULL);
+		else if (read_res < 0)
+			return (NULL);
+		else
+			return (ft_strdup(""));
+	}
+	return (free(*string), ft_gnl_extract_line(&main_string, string, i));
+}
+
 char	*get_next_line(int fd)
 {
-	char		*buffer;
-	size_t		b_size;
 	static char	*to_return;
+	char		buffer[BUFFER_SIZE + 1];
 	int			read_res;
+	char		*tmp;
 
-	if (fd <= 0 || fd >= 4)
+	read_res = -1;
+	if ((fd < 0 || fd >= 1000) || (BUFFER_SIZE <= 0))
 		return (NULL);
-	b_size = BUFFER_SIZE + 1;
-	buffer = malloc(b_size + 1);
-	buffer[b_size + 1] = '\0';
-	read_res = 1;
-	while (read_res && ft_strchr(buffer, 10) == NULL)
+	if (to_return == NULL)
 	{
-		read_res = read(fd, buffer, b_size);
-		if (read_res == -1)
-		{
-			free(buffer);
-			return (NULL);
-		}
-		printf("%d", read_res);
-		if (!read_res)
-			return (NULL);
+		read_res = read(fd, buffer, BUFFER_SIZE);
 		buffer[read_res] = '\0';
-		if (to_return <= 0)
-		{
-			to_return = malloc(ft_strlen(buffer) + 1);
-			ft_strlcpy(to_return, buffer, ft_strlen(buffer) + 1);
-		}
-		else
-		{
-			to_return = ft_strjoin(to_return, buffer);
-			if ((size_t)read_res < b_size)
-				break ;
-		}
+		to_return = ft_strdup(buffer);
 	}
-	return (ft_gnl_process(&to_return));
+	while (read_res != 0)
+	{
+		read_res = read(fd, buffer, BUFFER_SIZE);
+		buffer[read_res] = '\0';
+		tmp = to_return;
+		to_return = ft_strjoin(to_return, buffer);
+		free(tmp);
+		if (ft_strchr(to_return, '\n') != NULL || read_res == -1)
+			break ;
+	}
+	return ((ft_gnl_process(&to_return, read_res)));
 }
