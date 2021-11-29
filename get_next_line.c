@@ -6,7 +6,7 @@
 /*   By: mbistami <mbistami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 10:37:00 by mbistami          #+#    #+#             */
-/*   Updated: 2021/11/28 11:46:53 by mbistami         ###   ########.fr       */
+/*   Updated: 2021/11/29 10:14:01 by mbistami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,7 @@ char	*ft_gnl_process(char **string, int read_res)
 		free(*string);
 		free(main_string);
 		*string = NULL;
-		if (read_res == 0)
-			return (NULL);
-		else if (read_res < 0)
+		if (read_res == 0 || read_res < 0)
 			return (NULL);
 		else
 			return (ft_strdup(""));
@@ -95,23 +93,19 @@ char	*get_next_line(int fd)
 	char		*tmp;
 
 	read_res = -1;
-	if ((fd < 0 || fd >= 1000) || (BUFFER_SIZE <= 0))
+	if ((fd < 0) || (BUFFER_SIZE <= 0))
 		return (NULL);
 	if (to_return == NULL)
+		to_return = ft_strdup("");
+	while (read_res != 0 && ft_strchr(to_return, '\n') == NULL)
 	{
 		read_res = read(fd, buffer, BUFFER_SIZE);
-		buffer[read_res] = '\0';
-		to_return = ft_strdup(buffer);
-	}
-	while (read_res != 0)
-	{
-		read_res = read(fd, buffer, BUFFER_SIZE);
+		if (read_res == -1)
+			break ;
 		buffer[read_res] = '\0';
 		tmp = to_return;
 		to_return = ft_strjoin(to_return, buffer);
 		free(tmp);
-		if (ft_strchr(to_return, '\n') != NULL || read_res == -1)
-			break ;
 	}
 	return ((ft_gnl_process(&to_return, read_res)));
 }
