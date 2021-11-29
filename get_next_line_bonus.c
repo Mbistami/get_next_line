@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbistami <mbistami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 10:37:00 by mbistami          #+#    #+#             */
-/*   Updated: 2021/11/29 14:02:53 by mbistami         ###   ########.fr       */
+/*   Updated: 2021/11/29 21:35:07 by mbistami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ char	*ft_gnl_process(char **string, int read_res)
 
 char	*get_next_line(int fd)
 {
-	static char	*to_return;
+	static char	*to_return[OPEN_MAX];
 	char		buffer[BUFFER_SIZE + 1];
 	int			read_res;
 	char		*tmp;
@@ -95,17 +95,17 @@ char	*get_next_line(int fd)
 	read_res = -1;
 	if ((fd < 0) || (BUFFER_SIZE <= 0))
 		return (NULL);
-	if (to_return == NULL)
-		to_return = ft_strdup("");
-	while (read_res != 0 && ft_strchr(to_return, '\n') == NULL)
+	if (to_return[fd] == NULL)
+		to_return[fd] = ft_strdup("");
+	while (read_res != 0 && ft_strchr(to_return[fd], '\n') == NULL)
 	{
 		read_res = read(fd, buffer, BUFFER_SIZE);
 		if (read_res == -1)
 			break ;
 		buffer[read_res] = '\0';
-		tmp = to_return;
-		to_return = ft_strjoin(to_return, buffer);
+		tmp = to_return[fd];
+		to_return[fd] = ft_strjoin(to_return[fd], buffer);
 		free(tmp);
 	}
-	return ((ft_gnl_process(&to_return, read_res)));
+	return ((ft_gnl_process(&to_return[fd], read_res)));
 }

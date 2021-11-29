@@ -1,21 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbistami <mbistami@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 10:27:08 by mbistami          #+#    #+#             */
-/*   Updated: 2021/11/29 21:30:14 by mbistami         ###   ########.fr       */
+/*   Updated: 2021/11/29 21:28:21 by mbistami         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_BONUS_H
+# define GET_NEXT_LINE_BONUS_H
 # include<unistd.h>
 # include<stdlib.h>
 # include<stdio.h>
-# include<limits.h>
 
 char	*get_next_line(int fd);
 size_t	ft_strlcat(char *dst, char *src, size_t dstsize);
